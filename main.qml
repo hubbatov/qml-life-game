@@ -10,75 +10,59 @@ Window {
 
 	visible:  true
 
-	width: 400
-	height: 400
-
-	ListModel{
-		id: lifeCells
-	}
-
-	property var lifeField: []
+	width: 300
+	height: 300
 
 	Repeater{
-		model: lifeCells
-		delegate: Rectangle{
+		id: rows
+		delegate: Repeater{
 
-			id: cell
+			id: columns
+			model: modelData
 
-			width: lifeField.width / Logic.xDimension
-			height: lifeField.height / Logic.yDimension
+			property int rowIndex: index
 
-			property int xPosition: index % Logic.xDimension
-			property int yPosition: index / Logic.yDimension
+			delegate: Rectangle{
+				id: cell
 
-			property bool isAlive: alive
+				width: lifeField.width / Logic.xDimension
+				height: lifeField.height / Logic.yDimension
 
-			x: parent.width / Logic.xDimension * xPosition
-			y: (parent.height / Logic.yDimension) * yPosition
+				property int xPosition: index
+				property int yPosition: columns.rowIndex
 
-			transitions: [
-				Transition {
-					from: "alive"; to: "dead"
-					PropertyAnimation { target: cell
-						from: "red"; properties: "color"; duration: 300 }
-				},
-				Transition {
-					from: "dead"; to: "alive"
-					PropertyAnimation { target: cell
-						from: "green"; properties: "color"; duration: 300 }
-				}
-			]
+				property bool isAlive: modelData
 
-			states: [
-				State {
-					name: "alive"
-					PropertyChanges { target: cell; color: "black" }
-				},
-				State {
-					name: "dead"
-					PropertyChanges { target: cell; color: "transparent" }
-				}
-			]
+				x: cell.width * xPosition
+				y: cell.height * yPosition
 
-			state: isAlive ? "alive" : "dead"
+				color: isAlive ? "black" : "transparent"
+			}
+
+			Component.onCompleted: {
+				console.timeEnd("delegate create")
+			}
 		}
 	}
 
 	Timer{
 		id: lifeTimer
 
-		interval: 500
+		interval: 100
 		repeat: true
 
 		running: true
 
 		onTriggered: {
+			console.time("delegate create")
 			Logic.lifeCycle()
+			rows.model = Logic.model
 		}
 	}
 
 	Component.onCompleted: {
-		Logic.initialize(lifeCells, 30, 30)
+		Logic.initializeRandom(40, 40)
+		rows.model = Logic.model
 	}
 }
 
