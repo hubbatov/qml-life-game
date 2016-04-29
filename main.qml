@@ -10,45 +10,36 @@ Window {
 
 	visible:  true
 
-	width: 300
-	height: 300
+	property int xcount: 100
+	property int ycount: 100
 
-	Repeater{
-		id: rows
-		delegate: Repeater{
+	width: 500
+	height: 500
 
-			id: columns
-			model: modelData
+	ListModel {
+		id: cellsModel
+	}
 
-			property int rowIndex: index
+	GridView{
+		id: view
 
-			delegate: Rectangle{
-				id: cell
+		anchors.fill: parent
+		model: cellsModel
 
-				width: lifeField.width / Logic.xDimension
-				height: lifeField.height / Logic.yDimension
+		cellWidth: lifeField.width / xcount
+		cellHeight: lifeField.height / ycount
 
-				property int xPosition: index
-				property int yPosition: columns.rowIndex
-
-				property bool isAlive: modelData
-
-				x: cell.width * xPosition
-				y: cell.height * yPosition
-
-				color: isAlive ? "black" : "transparent"
-			}
-
-			Component.onCompleted: {
-				console.timeEnd("delegate create")
-			}
+		delegate: Rectangle{
+			width: view.cellWidth
+			height: view.cellHeight
+			color: alive ? "black" : "transparent"
 		}
 	}
 
 	Timer{
 		id: lifeTimer
 
-		interval: 100
+		interval: 300
 		repeat: true
 
 		running: true
@@ -56,13 +47,12 @@ Window {
 		onTriggered: {
 			console.time("delegate create")
 			Logic.lifeCycle()
-			rows.model = Logic.model
+			console.timeEnd("delegate create")
 		}
 	}
 
 	Component.onCompleted: {
-		Logic.initializeRandom(40, 40)
-		rows.model = Logic.model
+		Logic.initializeRandom(xcount, ycount)
 	}
 }
 
