@@ -45,9 +45,9 @@ Window {
 		running: true
 
 		onTriggered: {
-			console.time("delegate create")
+			console.time("lifeCycle")
 			Logic.lifeCycle()
-			console.timeEnd("delegate create")
+			console.timeEnd("lifeCycle")
 		}
 	}
 
