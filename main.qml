@@ -10,29 +10,38 @@ Window {
 
 	visible:  true
 
-	property int xcount: 100
-	property int ycount: 100
+	maximumWidth: 500; minimumWidth: 500;
+	maximumHeight: 500; minimumHeight: 500;
 
-	width: 500
-	height: 500
-
-	ListModel {
-		id: cellsModel
-	}
+	signal update()
 
 	GridView{
 		id: view
 
 		anchors.fill: parent
-		model: cellsModel
+		model: Logic.n
 
-		cellWidth: lifeField.width / xcount
-		cellHeight: lifeField.height / ycount
+		cellWidth: lifeField.width / Logic.size
+		cellHeight: lifeField.height / Logic.size
 
 		delegate: Rectangle{
+			id: delegate
+
+			property var alive
+
 			width: view.cellWidth
 			height: view.cellHeight
-			color: alive ? "black" : "transparent"
+			color: !!alive ? "black" : "transparent"
+
+			Component.onCompleted: {
+				lifeField.onUpdate.connect(delegate.updateCell)
+			}
+
+			function updateCell(){
+				if(!!Logic.matrix && !!index){
+					delegate.alive = Logic.matrix[index]
+				}
+			}
 		}
 	}
 
@@ -52,7 +61,8 @@ Window {
 	}
 
 	Component.onCompleted: {
-		Logic.initializeRandom(xcount, ycount)
+		Logic.appWindow = lifeField
+		Logic.initializeRandom()
 	}
 }
 
