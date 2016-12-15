@@ -40,6 +40,7 @@ Window {
 			function updateCell(){
 				if(!!Logic.matrix && !!index){
 					delegate.alive = Logic.matrix[index]
+					opacity = Math.abs(Logic.matrix[index] + 128 / 255)
 				}
 			}
 		}
@@ -48,15 +49,14 @@ Window {
 	Timer{
 		id: lifeTimer
 
-		interval: 300
+		interval: 50
 		repeat: true
 
 		running: true
 
 		onTriggered: {
-			console.time("lifeCycle")
 			Logic.lifeCycle()
-			console.timeEnd("lifeCycle")
+			//Logic.lifeCycleFFT()
 		}
 	}
 
